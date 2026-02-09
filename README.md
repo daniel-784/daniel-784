@@ -2,7 +2,7 @@
 - 👀 I’m interested in music, tech, aviation, fishing, motorbikes
 - 🌱 I’m currently learning Computer Networks and Cyber Security 
 - 💞️ I’m looking to collaborate on ...
-- 📫 How to reach me: Email - k00317541@student.tus.ie
+- 📫 How to reach me: Email - danieltaylor.connect@gmail.com
 - 😄 Pronouns: He/Him
 - ⚡ Fun fact: ...
 
