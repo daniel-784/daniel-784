@@ -7796,7 +7796,7 @@ a.anchor-link {
 <!-- End of mermaid configuration --></head>
 <body class="jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
 <main>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=93c9c6e6">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=ad53987a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7813,7 +7813,89 @@ a.anchor-link {
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=47c41462">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d83d607e">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h2 id="Step-0-%E2%80%93-Create-the-helper-file-(needed-on-Google-Colab)">Step 0 – Create the helper file (needed on Google Colab)<a class="anchor-link" href="#Step-0-%E2%80%93-Create-the-helper-file-(needed-on-Google-Colab)">¶</a></h2><p>The lab says <code>qam_receiver_helpers.py</code> must sit next to the notebook. Google Colab only uploads the notebook itself, so the cell below <strong>writes the supplied helper code (copied exactly from the lab sheet) into that file</strong>. Then the import in the Setup cell works anywhere: Colab, Jupyter or VS Code. If you already have the file, running this cell just overwrites it with identical code.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=93f9b521">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [1]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="o">%%writefile</span> qam_receiver_helpers.py
+<span class="sd">"""</span>
+<span class="sd">Helper Code</span>
+<span class="sd">Students may use these as black-box helpers. Their implementation is</span>
+<span class="sd">not part of the assessment.</span>
+<span class="sd">Functions:</span>
+<span class="sd">- recover_symbols(rx_passband, fc, fs, samples_per_symbol)</span>
+<span class="sd">- add_passband_awgn(signal, tx_symbols, samples_per_symbol, esn0_db, seed=2026)</span>
+<span class="sd">"""</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">recover_symbols</span><span class="p">(</span><span class="n">rx_passband</span><span class="p">,</span> <span class="n">fc</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">samples_per_symbol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Recover complex I+jQ symbol estimates from a real passband waveform.</span>
+<span class="sd">    Assumes perfectly aligned symbols/carrier, and a whole number of</span>
+<span class="sd">    carrier cycles per symbol. Returns one complex value per symbol.</span>
+<span class="sd">    """</span>
+    <span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">rx_passband</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">ns</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">samples_per_symbol</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ns</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">signal</span><span class="o">.</span><span class="n">size</span> <span class="o">%</span> <span class="n">ns</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Passband length must be a multiple of samples_per_symbol"</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ns</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="o">/</span> <span class="n">fs</span>
+    <span class="n">frames</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ns</span><span class="p">)</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">frames</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">fc</span><span class="o">*</span><span class="n">t</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">frames</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">fc</span><span class="o">*</span><span class="n">t</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">q</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">add_passband_awgn</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">tx_symbols</span><span class="p">,</span> <span class="n">samples_per_symbol</span><span class="p">,</span> <span class="n">esn0_db</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">2026</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Add real passband AWGN at a target symbol-energy-to-noise ratio.</span>
+<span class="sd">    E_s/N_0 (dB) refers to the recovered complex constellation after</span>
+<span class="sd">    coherent demodulation, not raw sample-level SNR.</span>
+<span class="sd">    """</span>
+    <span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">symbols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">tx_symbols</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">symbols</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"tx_symbols must not be empty"</span><span class="p">)</span>
+    <span class="n">ns</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">samples_per_symbol</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ns</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">signal</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">symbols</span><span class="o">.</span><span class="n">size</span><span class="o">*</span><span class="n">ns</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Expect exactly samples_per_symbol samples per tx symbol"</span><span class="p">)</span>
+    <span class="n">es</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">symbols</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">snr</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">esn0_db</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="n">variance</span> <span class="o">=</span> <span class="n">ns</span> <span class="o">*</span> <span class="n">es</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">snr</span><span class="p">)</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">signal</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variance</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="n">signal</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Overwriting qam_receiver_helpers.py
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d093c766">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7823,12 +7905,12 @@ a.anchor-link {
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=59cd3b30">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=908838ae">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [1]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [2]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -7867,7 +7949,7 @@ a.anchor-link {
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=4c654328">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=42e7a0d5">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7886,12 +7968,12 @@ a.anchor-link {
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=3177ea7d">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=2e4127ab">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [2]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [3]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ---------- 1(a) text -&gt; UTF-8 bytes ----------</span>
@@ -7925,12 +8007,12 @@ Hex         : 48 65 6c 6c 6f 20 66 72 6f 6d 20 74 68 65 20 6c 61 62 2e
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=c9f15f5a">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=ba03b9ab">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [3]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [4]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ---------- 1(b) bytes -&gt; array of bits ----------</span>
@@ -7969,12 +8051,12 @@ All bits (grouped per byte):
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=c9598dc3">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=d5097bf1">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [4]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [5]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ---------- 1(c) counts ----------</span>
@@ -8003,7 +8085,7 @@ Number of bits : 152  (= 19 bytes x 8 bits/byte)
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5c3b6f01">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=18100d57">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8021,7 +8103,7 @@ Number of bits : 152  (= 19 bytes x 8 bits/byte)
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=7d3e4fcf">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=34d00984">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8063,12 +8145,12 @@ Number of bits : 152  (= 19 bytes x 8 bits/byte)
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=6bc0ff4e">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=7e414b9a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [5]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ---------- 2(a) group bits in fours and map to complex symbols ----------</span>
@@ -8124,12 +8206,12 @@ Total symbols: 38
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=525f4fa0">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=62c67c7a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [7]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ---------- 2(b) constellation plot ----------</span>
@@ -8187,7 +8269,7 @@ Total symbols: 38
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5ea1f867">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=a5d240f6">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8200,7 +8282,7 @@ Total symbols: 38
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=78c21b2d">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=77a10749">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8243,12 +8325,12 @@ Time array for one symbol: t = 0, 40 ns, 80 ns, …, 99 × 40 ns = 3.96 µs. Tha
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=e9d1429b">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=4fb854d4">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [7]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ---------- 3(a) parameters and one-symbol time array ----------</span>
@@ -8288,12 +8370,12 @@ t_sym runs from 0.00 us to 3.96 us (100 points)
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=39600ca2">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=d821d2d1">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ---------- 3(b) full passband waveform ----------</span>
@@ -8335,12 +8417,12 @@ Total duration = 152 us (= 38 x 4 us = 152 us)
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=f0f63505">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=5b026f00">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ---------- 3(c) plot the first four symbols ----------</span>
@@ -8382,7 +8464,7 @@ Total duration = 152 us (= 38 x 4 us = 152 us)
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=4865939f">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=dd468ce8">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8400,12 +8482,12 @@ Total duration = 152 us (= 38 x 4 us = 152 us)
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=1f1aa6d4">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=f8224512">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [11]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ---------- 3(d) numbers checked in code ----------</span>
@@ -8439,7 +8521,7 @@ Whole number of cycles? False
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=2f0cafb8">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=82c14fe9">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8452,7 +8534,7 @@ Whole number of cycles? False
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=407cbfbf">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=e17c5261">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8463,12 +8545,12 @@ Whole number of cycles? False
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=d6434c6c">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=31a0d7fa">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [11]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ---------- 4(a) call the supplied receiver ----------</span>
@@ -8508,7 +8590,7 @@ Largest error over all symbols: 0.803
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5d2c0649">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=2190347b">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8525,12 +8607,12 @@ Q̂ = −2·mean(x·sin) = −I·<strong>2⟨sin·cos⟩</strong> + Q·<strong>2
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=a18340e9">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=7f0849f5">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [13]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Measure the three averages the receiver effectively uses, over our 0.8-cycle symbol.</span>
@@ -8574,7 +8656,7 @@ Symbol 0: I_hat = 0.951*(-1) - 0.183*(-3) = -0.402
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c1ed7954">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=4329caad">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8587,12 +8669,12 @@ Symbol 0: I_hat = 0.951*(-1) - 0.183*(-3) = -0.402
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=e1dd1ea9">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=2b071573">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [13]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [14]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ---------- 4(b) nearest-level decision + reverse mapping ----------</span>
@@ -8642,12 +8724,12 @@ Symbol decisions all correct: True
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=5ee70dd8">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=f6b3d2ca">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [14]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [15]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ---------- 4(c) bits -&gt; bytes -&gt; UTF-8 text ----------</span>
@@ -8683,12 +8765,12 @@ Recovered text : 'Hello from the lab.'
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=1075d0f0">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=1a85488c">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [15]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [16]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ---------- 4(d) bit errors and exact match ----------</span>
@@ -8718,7 +8800,7 @@ Text recovered exactly: True
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=e9795d81">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=2aa64e2e">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8729,7 +8811,7 @@ Text recovered exactly: True
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=88ef50e6">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=04b51ae6">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8764,12 +8846,12 @@ Text recovered exactly: True
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=df4c64ea">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=77f3e9c4">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [16]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [17]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ---------- noise size worked out for each setting ----------</span>
@@ -8805,7 +8887,7 @@ Es/N0 =  0 dB -&gt; linear    1.0, N0 = 10.842, sigma per axis = 2.328, margin/s
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=b156bebe">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9eb097ce">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8820,12 +8902,12 @@ Es/N0 =  0 dB -&gt; linear    1.0, N0 = 10.842, sigma per axis = 2.328, margin/s
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b96aa999">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=f41ef0bf">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [17]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [18]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ---------- 5(a) + 5(c) run the experiments ----------</span>
@@ -8871,12 +8953,12 @@ Es/N0 =  0 dB -&gt; linear    1.0, N0 = 10.842, sigma per axis = 2.328, margin/s
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b38f8973">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=7d5fa057">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [18]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [19]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ---------- 5(b) noisy constellation(s) against the original points ----------</span>
@@ -8922,12 +9004,12 @@ Es/N0 =  0 dB -&gt; linear    1.0, N0 = 10.842, sigma per axis = 2.328, margin/s
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=0aec8779">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=a725b461">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [19]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [20]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ---------- extra sanity check: compare with textbook theory ----------</span>
@@ -8964,7 +9046,7 @@ Es/N0 =  0 dB -&gt; linear    1.0, N0 = 10.842, sigma per axis = 2.328, margin/s
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=375f01f7">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=3a682e2d">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -9014,7 +9096,7 @@ Es/N0 =  0 dB -&gt; linear    1.0, N0 = 10.842, sigma per axis = 2.328, margin/s
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=b1a3cd84">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=237ddd55">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -9028,12 +9110,12 @@ Es/N0 =  0 dB -&gt; linear    1.0, N0 = 10.842, sigma per axis = 2.328, margin/s
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=07989b33">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b4edbc51">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [20]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [21]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ---------- 6.1 attenuation experiment ----------</span>
@@ -9075,7 +9157,7 @@ Attenuated x0.5 + AGC                  bit errors =   0, BER = 0.0000, match = T
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=7877e34a">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f497039c">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -9090,12 +9172,12 @@ Attenuated x0.5 + AGC                  bit errors =   0, BER = 0.0000, match = T
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=5e7a1ec8">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=8377228e">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [21]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [22]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ---------- 6.2 multipath experiment ----------</span>
@@ -9151,7 +9233,7 @@ Multipath + AWGN (20 dB)               bit errors =   1, BER = 0.0066, match = F
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=3a45b4ba">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=2b7fe8ee">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
