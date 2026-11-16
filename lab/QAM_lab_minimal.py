@@ -42,7 +42,7 @@ tt = np.arange(4*Ns) / fs * 1e6
 plt.figure(figsize=(10, 3)); plt.plot(tt, tx[:4*Ns])
 for k in range(5): plt.axvline(k*Ts*1e6, color='r', ls='--')
 plt.xlabel('Time (µs)'); plt.ylabel('Amplitude'); plt.title('First 4 symbols'); plt.show()
-print('Ns =', Ns, '| symbol rate =', 1/Ts, 'Bd | bit rate =', 4/Ts, 'bit/s | cycles/symbol =', fc*Ts)
+print('Ns =', Ns, '| symbol rate =', 1/Ts, 'Bd | bit rate =', 4/Ts, 'bit/s | cycles/symbol =', round(fc*Ts, 2))
 
 # 4. Demodulation and text recovery
 def decode(rx):
